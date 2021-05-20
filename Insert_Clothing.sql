@@ -32,7 +32,7 @@ INSERT INTO Clothing VALUES
 (	
 	nextval('cloth_sequence'),
 	'Saree', 'Women',
-	'Yellow Woven; Zari Border; Viscose Rayon',
+	'Green Silk; Taping Border; Chiffon',
 	'Pothys', 3224, 360
 ),
 (	

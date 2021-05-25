@@ -1,23 +1,3 @@
-const express = require('express');
-const router = express.Router();
-
-const connectionString = 'postgressql://postgres:060669@localhost:5432/online_store';
-const { Client } = require('pg');
-const client = new Client({
-    connectionString
-})
-client.connect();
-
-router.get('/collection', (req, res, next) => {
-    client
-        .query('SELECT * FROM CLOTHING',
-        (err, result) => {
-            if(err) throw err;
-            res.render('clothing', {title: 'clothing', items: result});
-        });
-});
-
-module.exports = router;
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,24 +5,27 @@ module.exports = router;
   <meta charset="UTF-8">
   <meta content="IE=edge" http-equiv="X-UA-Compatible">
   <meta content="width=device-width,initial-scale=1" name="viewport">
-  <meta content="Page description" name="description">
+  <meta content="description" name="description">
   <meta name="google" content="notranslate" />
-  
+  <meta content="Mashup templates have been developped by Orson.io team" name="author">
+
   <!-- Disable tap highlight on IE -->
   <meta name="msapplication-tap-highlight" content="no">
   
   <link href="./assets/apple-icon-180x180.png" rel="apple-touch-icon">
   <link href="./assets/favicon.ico" rel="icon">
+  <link rel="stylesheet" type="text/css" href="style.css">
 
 
 
-  <title>Spring Fashion</title>  
+
+  <title>Spring Fashion</title>    
 
 <link href="./main.82cfd66e.css" rel="stylesheet"></head>
 
 <body>
 
-<!-- Add your content of header -->
+ <!-- Add your content of header -->
 <header class="">
   <div class="navbar navbar-default visible-xs">
     <button type="button" class="navbar-toggle collapsed">
@@ -66,7 +49,7 @@ module.exports = router;
       <ul class="nav">
         <li><a href="./index.html" title="">Home</a></li>
         <li><a href="./about.html" title="">About</a></li>
-        <li><a href="./collection.html" title="">Our Collection</a></li>
+        <li><a href="collection" title="">Our Collection</a></li>
         <li><a href="./login.html" title="">Login</a></li>
         <li><a href="./signup.html" title="">Sign Up</a></li>
 
@@ -91,25 +74,25 @@ module.exports = router;
 </header>
 <main class="" id="main-collapse">
 
-<!-- Add your site or app content here -->
- 
-<div class="hero-full-wrapper">
-  <div class="grid">
-  <div class="gutter-sizer"></div>
-    <div class="grid-sizer"></div>
+<h1>PLEASE LOGIN TO CONTINUE</h1> 
+<form action="login" method="POST">
+  <div class="mb-3">
+    <label for="username" class="form-label">Username</label>
+    <input type="text" class="form-control" name="username" id="username" required>
     
-  
-   
   </div>
-</div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" class="form-control" name="password" id="password" required>
+  </div>
+  <div class="mb-3">
+    <p>Don't have an account? <a href="./signup.html">Sign Up</a></p>
+  </div>
+  <br>
+  <button type="submit" class="btn btn-primary">Login</button>
+</form>
 
-
-<script>
-  document.addEventListener("DOMContentLoaded", function (event) {
-     masonryBuild();
-  });
-</script>
-
+    
 </main>
 
 <script>
@@ -132,6 +115,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
   ga('send', 'pageview');
 </script>
 
---><script type="text/javascript" src="./main.85741bff.js"></script></body>
-
+--> <script type="text/javascript" src="./main.85741bff.js"></script>
+    
+</body>
+    
 </html>

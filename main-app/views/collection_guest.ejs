@@ -2,24 +2,18 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta content="IE=edge" http-equiv="X-UA-Compatible">
-  <meta content="width=device-width,initial-scale=1" name="viewport">
-  <meta content="Page description" name="description">
-  <meta name="google" content="notranslate" />
-  
-  <!-- Disable tap highlight on IE -->
-  <meta name="msapplication-tap-highlight" content="no">
-  
-  <link href="../public/assets/apple-icon-180x180.png" rel="apple-touch-icon">
-  <link href="../public/assets/favicon.ico" rel="icon">
-
-
-
-  <title>Spring Fashion</title>  
-
-<link href="./main.82cfd66e.css" rel="stylesheet"></head>
-
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    <meta content="Page description" name="description">
+    <meta name="google" content="notranslate" />
+    <meta name="msapplication-tap-highlight" content="no">
+    <link href="../public/assets/apple-icon-180x180.png" rel="apple-touch-icon">
+    <link href="../public/assets/favicon.ico" rel="icon">
+    <title>Spring Fashion</title>  
+    <link href="./main.82cfd66e.css" rel="stylesheet">
+    <link href="./style.css" rel="stylesheet">
+</head>
 <body>
 
 <!-- Add your content of header -->
@@ -64,7 +58,7 @@
             <i class="fa fa-twitter"></i>
           </a>
         </p>
-        <p><a href="https://github.com/sxfiy-a/DBMS-Project"></a></p>
+        <p><a href="https://github.com/sxfiy-a/DBMS-Project">© Spring Fashion</a></p>
       </nav>  
     </div> 
   </nav>
@@ -118,7 +112,7 @@
       </td>
       <td>
         <form class="addtocart" action="addtocart" method="post">
-          <button type="submit" class="btn" name="clothing_id" value="<%= result.rows[i]['clothing_id'] %>" >Add to Cart</button>
+          <button type="submit" class="push_button red" name="clothing_id" value="<%= result.rows[i]['clothing_id'] %>">Add to Cart</button>
         </form>
       </td>
     </tr>

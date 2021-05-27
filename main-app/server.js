@@ -1,8 +1,7 @@
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
-const cors = require('cors');
-
+const moment = require('moment');
 const connectionString = 'postgressql://postgres:060669@localhost:5432/online_store';
 const { Client } = require('pg');
 
@@ -57,6 +56,9 @@ app.get('/logout', (req, res) => {
     req.session.loggedin = false;
     res.redirect('/');
 })
+app.get('/loginerror', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'loginerror.html'));
+})
 //To display clothing table
 app.get('/collection', (req, res) => {
     client
@@ -82,11 +84,12 @@ app.get('/collection', (req, res) => {
 app.get('/usercart', (req, res) => { 
     if(req.session.loggedin !== true)
         res.redirect('/logintocontinue');
-    else  { //  QUERY ERROR - FIX!
-        // var qry =   "SELECT clothing_name, category, description, seller, price, quantity \
-        // FROM Clothing, Cart_item \
-        // WHERE Clothing.clothing_id IN(SELECT clothing_id FROM cart_item WHERE cart_id = \
-        // (SELECT cart_id FROM Cart WHERE if_bought = FALSE AND username = $1))";
+    else  { 
+        var qry =   "SELECT cart_item.clothing_id, clothing_name, category, description, seller, price, quantity \
+        FROM Clothing, Cart_item \
+        WHERE Clothing.clothing_id = Cart_item.clothing_id \
+        AND Cart_item.cart_id = (SELECT cart_id FROM Cart \
+        WHERE if_bought = FALSE AND username = $1)";
         client  
             .query(qry,
             [req.session.username],
@@ -108,6 +111,65 @@ app.get('/welcome', (req, res) => {
         res.redirect('/logintocontinue');
 });
 
+app.get('/checkout', (req, res) => {
+    if(req.session.loggedin !== true)
+        res.redirect('/logintocontinue');
+    else {
+        client
+            .query('SELECT cart_id FROM Cart WHERE if_bought = FALSE and username = $1',
+            [req.session.username],
+            (err, result) => {
+                if(err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
+                } 
+                cartid = result.rows[0]['cart_id'];
+                client
+                    .query('SELECT SUM(price*quantity) AS total FROM clothing, cart_item WHERE clothing.clothing_id = cart_item.clothing_id and cart_item.cart_id = $1',
+                    [cartid], 
+                    (err, result1) => {
+                        if(err) {
+                            console.log(err);
+                            res.sendStatus(500);
+                            return;
+                        }  
+                        client  
+                            .query('INSERT INTO Bill(cart_id, order_date, delivery_date, total_cost) VALUES($1, $2, $3, $4)',
+                            [cartid, moment().format('DD-MM-YYYY'), moment().add(10, 'days').format('DD-MM-YYYY'), result1.rows[0]['total']],
+                            (err, result) => {
+                                if(err) {
+                                    console.log(err);
+                                    res.sendStatus(500);
+                                    return;
+                                } 
+                            })
+                        res.redirect('/bill');
+                    })
+            })
+    }
+});
+app.get('/bill', (req, res) => {
+    if(req.session.loggedin !== true)
+        res.redirect('/logintocontinue');
+    let qry =   "SELECT bill_id, TO_CHAR(order_date, 'DD-MM-YYYY') AS order_date, TO_CHAR(delivery_date, 'DD-MM-YYYY') AS delivery_date, " + 
+                'cart_item.clothing_id, clothing_name, category, description, ' +
+                'seller, price, quantity, price*quantity AS total, total_cost ' +
+                'FROM Bill, Clothing, Cart_item ' +
+                'WHERE Clothing.clothing_id = Cart_item.clothing_id ' +
+                'AND Cart_item.cart_id = $1';
+    client
+        .query(qry,
+        [cartid],
+        (err, results) => {
+        if(err) {
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        } 
+        res.render('bill.ejs', {result: results, res: req.session.username});
+    })
+})
 app.post('/addtocart', (req, res) => {
     if(req.session.loggedin !== true) {
         res.redirect('/logintocontinue');
@@ -125,10 +187,9 @@ app.post('/addtocart', (req, res) => {
                     return;
                 }
                 if(result.rows.length === 0) { //no open cart for the user
-                    const d = getNewDate();
                     client
-                        .query('INSERT INTO Cart(username, order_date) VALUES($1, $2)',
-                        [req.session.username, d],
+                        .query('INSERT INTO Cart(username) VALUES($1)',
+                        [req.session.username],
                         (err, result) => {
                             if(err) {
                                 console.log(err);
@@ -200,6 +261,24 @@ app.post('/addtocart', (req, res) => {
             });
     }    
 })
+app.post('/deletefromcart', (req, res) => {
+    if(req.session.loggedin !== true)
+        res.redirect('/logintocontinue');
+    else {
+        const clothing_id = req.body.clothing_id;
+        client
+            .query('DELETE FROM Cart_item WHERE clothing_id = $1 AND cart_id = (SELECT cart_id FROM Cart WHERE if_bought = FALSE AND username = $2)',
+            [clothing_id, req.session.username],
+            (err, result) => {
+                if(err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
+                } 
+                res.redirect('/usercart');
+            })
+    }
+})
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     if(username && password) {
@@ -216,7 +295,7 @@ app.post('/login', (req, res) => {
                     req.session.username = username;
                     res.redirect('/welcome');
                 } else {
-                    res.send("<script>alert('Invalid username and/or password')</script>");
+                    res.redirect('/loginerror');
                 }
 
             });

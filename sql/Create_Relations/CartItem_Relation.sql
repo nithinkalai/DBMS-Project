@@ -1,5 +1,5 @@
 CREATE TABLE Cart_Item (
-	cart_item_id BIGINT NOT NULL,
+	cart_item_id SERIAL NOT NULL,
 	cart_id SERIAL NOT NULL,
 	clothing_id INT NOT NULL,
 	clothing_cost DECIMAL,
@@ -17,13 +17,6 @@ ALTER TABLE Cart_Item ADD CONSTRAINT
 clothingid_fk FOREIGN KEY(clothing_id) 
 REFERENCES Clothing(clothing_id);
 
-CREATE SEQUENCE IF NOT EXISTS cart_item_seq
-AS INT
-INCREMENT 1
-MINVALUE 100
-START 100
-NO CYCLE
-OWNED BY Cart_Item.cart_item_id;
 
 
 

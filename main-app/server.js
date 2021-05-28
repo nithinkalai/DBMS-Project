@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const moment = require('moment');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const connectionString = 'postgressql://postgres:060669@localhost:5432/online_store';
 const { Client } = require('pg');
 
@@ -10,14 +12,7 @@ const client = new Client({
 })
 client.connect();
 
-//helper function
-getNewDate = () => {
-    const date_ob = new Date();
-    const date = ("0" + date_ob.getDate()).slice(-2);
-    const month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-    const year = date_ob.getFullYear();
-    return year + "-" + month + "-" + date;
-}
+
 var cartid;
 
 const app = express();
@@ -37,11 +32,12 @@ app.use(session({
 }));
 
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('/', (req, res) => { 
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+
 })
 app.get('/about', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'about.html'));
+        res.sendFile(path.join(__dirname, 'public', 'about.html'));
 })
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
@@ -79,12 +75,105 @@ app.get('/collection', (req, res) => {
 
     })
 })
-
+//to display men's clothing - view
+app.get('/men', (req, res) => {
+    client
+        .query('SELECT * FROM men_clothing',
+        (err, result) => {
+            if(err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+            if(req.session.loggedin !== true)
+                res.render('men_guest.ejs', {result: result}); 
+            else    
+                res.render('men_user.ejs', {result: result});
+        })
+});
+//to display women's clothing - view
+app.get('/women', (req, res) => {
+    client
+        .query('SELECT * FROM women_clothing',
+        (err, result) => {
+            if(err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+            if(req.session.loggedin !== true)
+                res.render('women_guest.ejs', {result: result}); 
+            else    
+                res.render('women_user.ejs', {result: result});
+        })
+});
+//to display kids' clothing - view
+app.get('/kids', (req, res) => {
+    client
+        .query('SELECT * FROM kids_clothing',
+        (err, result) => {
+            if(err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+            if(req.session.loggedin !== true)
+                res.render('kids_guest.ejs', {result: result}); 
+            else    
+                res.render('kids_user.ejs', {result: result});
+        })
+});
+app.get('/receipt', (req, res) => {
+    if(req.session.loggedin !== true)
+        res.redirect('/logintocontinue');
+    let qry =   "SELECT bill_id, TO_CHAR(order_date, 'DD-MM-YYYY') AS order_date, TO_CHAR(delivery_date, 'DD-MM-YYYY') AS delivery_date, " + 
+                'cart_item.clothing_id, clothing_name, category, description, ' +
+                'seller, price, quantity, price*quantity AS total, total_cost ' +
+                'FROM Bill, Clothing, Cart_item ' +
+                'WHERE Clothing.clothing_id = Cart_item.clothing_id ' +
+                'AND Cart_item.cart_id = $1  AND Bill.cart_id = $1';
+    client
+        .query(qry,
+        [cartid],
+        (err, results) => {
+            if(err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            } 
+            res.render('receipt.ejs', {result: results, res: req.session.username});
+        });    
+})
+//To get past orders of user
+app.get('/pastorders', (req, res) => {
+    if(req.session.loggedin !== true)
+        res.redirect('/logintocontinue');
+    let qry =  "SELECT bill_id, TO_CHAR(order_date, 'DD-MM-YYYY') AS order_date, TO_CHAR(delivery_date, 'DD-MM-YYYY') AS delivery_date, " +
+                "total_cost, cart_id FROM Bill WHERE cart_id IN (SELECT cart_id FROM Cart WHERE if_bought = TRUE AND username = $1)";
+    client
+        .query(qry,
+        [req.session.username],
+        (err, result) => {
+            if(err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+            res.render('pastorders.ejs', {result: result, res: req.session.username});
+        })
+})
+//To get a particular order's receipt
+app.post('/viewreceipt', (req, res) =>{
+    if(req.session.loggedin !== true)
+        res.redirect('/logintocontinue');
+    cartid = req.body.cart_id; 
+    res.redirect('/receipt');    
+})
 //user cart
 app.get('/usercart', (req, res) => { 
     if(req.session.loggedin !== true)
         res.redirect('/logintocontinue');
-    else  { 
+    else  {  
         var qry =   "SELECT cart_item.clothing_id, clothing_name, category, description, seller, price, quantity \
         FROM Clothing, Cart_item \
         WHERE Clothing.clothing_id = Cart_item.clothing_id \
@@ -99,7 +188,12 @@ app.get('/usercart', (req, res) => {
                     res.sendStatus(500);
                     return;
                 }
-                res.render('usercart.ejs', {result: result, res: req.session.username}) 
+                if(result.rows.length === 0)
+                    res.render('emptycart.ejs', {res: req.session.username});
+                else {
+                    res.render('usercart.ejs', {result: result, res: req.session.username}) 
+                }
+                
             })
     }
 })
@@ -143,6 +237,16 @@ app.get('/checkout', (req, res) => {
                                     res.sendStatus(500);
                                     return;
                                 } 
+                                client
+                                    .query('CALL update_qty($1)', 
+                                    [cartid],
+                                    (err, result) => {
+                                        if(err) {
+                                            console.log(err);
+                                            res.sendStatus(500);
+                                            return;
+                                        } 
+                                    })
                             })
                         res.redirect('/bill');
                     })
@@ -157,7 +261,7 @@ app.get('/bill', (req, res) => {
                 'seller, price, quantity, price*quantity AS total, total_cost ' +
                 'FROM Bill, Clothing, Cart_item ' +
                 'WHERE Clothing.clothing_id = Cart_item.clothing_id ' +
-                'AND Cart_item.cart_id = $1';
+                'AND Cart_item.cart_id = $1  AND Bill.cart_id = $1';
     client
         .query(qry,
         [cartid],
@@ -198,29 +302,29 @@ app.post('/addtocart', (req, res) => {
                             } else console.log('Created new cart');
                         });
                 }
-            })
-        client  
-            .query('SELECT price FROM Clothing WHERE clothing_id = $1', 
-            [clothing_id], 
-            (err, result) => {
-                if(err) {
-                    console.log(err);
-                    res.sendStatus(500);
-                    return;
-                }
-                clothing_price = result.rows[0]['price']; 
+                client  
+                    .query('SELECT cart_id FROM Cart WHERE if_bought = FALSE and username = $1',
+                    [req.session.username],
+                    (err, result) => {
+                        if(err) {
+                            console.log(err);
+                            res.sendStatus(500);
+                            return;
+                        } cartid = result.rows[0]['cart_id'];
+                    });
                 
-            });
-        client
-            .query('SELECT cart_id FROM Cart WHERE if_bought = FALSE AND username = $1',
-            [req.session.username],
-            (err, result) => {
-                if(err) {
-                    console.log(err);
-                    res.sendStatus(500);
-                    return;
-                } 
-                cartid = result.rows[0]['cart_id'];
+                client  
+                    .query('SELECT price FROM Clothing WHERE clothing_id = $1', 
+                    [clothing_id], 
+                    (err, result) => {
+                        if(err) {
+                            console.log(err);
+                            res.sendStatus(500);
+                            return;
+                        }
+                        clothing_price = result.rows[0]['price']; 
+                        
+                    });
                 client
                     .query('SELECT quantity FROM Cart_item WHERE cart_id = $1 AND clothing_id = $2',
                     [cartid, clothing_id],
@@ -257,8 +361,8 @@ app.post('/addtocart', (req, res) => {
                         }
                         res.redirect('/usercart');
                     });
-                
-            });
+            })
+
     }    
 })
 app.post('/deletefromcart', (req, res) => {
@@ -276,33 +380,35 @@ app.post('/deletefromcart', (req, res) => {
                     return;
                 } 
                 res.redirect('/usercart');
-            })
+            });
     }
-})
+});
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     if(username && password) {
+
         client
-            .query('SELECT * FROM Customer WHERE username = $1 AND pass = $2', [username, password],
+            .query('SELECT * FROM Customer WHERE username = $1', [username],
             (err, result) => {
                 if(err) {
                     console.log(err);
                     res.sendStatus(500);
                     return;
-                }
-                if(result.rows.length !== 0){
-                    req.session.loggedin = true;
-                    req.session.username = username;
-                    res.redirect('/welcome');
-                } else {
-                    res.redirect('/loginerror');
-                }
-
+                }         bcrypt.compare(password, result.rows[0]['pass'], (error, result1) => { 
+                            if(result1 === true)
+                            {   req.session.loggedin = true;
+                                req.session.username = username;
+                                res.redirect('/welcome');
+                            }
+                                
+                            else    
+                                res.redirect('/loginerror');
+                });
             });
     } else {
         res.send('Invalid');
     }
-})
+});
 
 app.post('/signup', (req, res) => {
     const {
@@ -316,43 +422,44 @@ app.post('/signup', (req, res) => {
         username,
         password
     } = req.body;
-    
+  
     client
         .query('SELECT * FROM Customer WHERE email = $1', [email],
         (err, result) => {
             if(result.rows.length !== 0)
             {
-                res.status(400).send("<script>alert('Email already exists, try again')</script>");
+                res.status(400).sendFile(path.join(__dirname, 'public', 'emailexists.html'));
                 return;
             } 
-            res.end();   
-        })
+           //  res.end();   
+        });
 
     client
         .query('SELECT * FROM Customer WHERE username = $1', [username],
         (err, result) => {
             if(result.rows.length !== 0)
             {
-                res.status(400).send("<script>alert('Username already exists')</script>");
+                res.status(400).sendFile(path.join(__dirname, 'public', 'usernameexists.html'));
                 return;
             }  
-            res.end();
-        })
-
-    client
-        .query('INSERT INTO Customer VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-        [username, password, firstname, lastname, dob, gender, phno, email, address],
-        (err, result) => {
-            if(err) {
-                console.log(err);
-                res.sendStatus(500);
-                return;
-            } 
-            res.status(201).send("<script>alert('Customer Created !')</script>");
-        })
+         //   res.end();
+        });
+        bcrypt.hash(password, saltRounds, (err, hash) => {
+            client
+            .query('INSERT INTO Customer VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+            [username, hash, firstname, lastname, dob, gender, phno, email, address],
+            (err, result) => {
+                if(err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
+                } 
+                res.status(201).sendFile(path.join(__dirname, 'public', 'created.html'));
+    
+            });
+        });
+  
 })
-
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

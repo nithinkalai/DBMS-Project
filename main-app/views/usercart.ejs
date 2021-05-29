@@ -80,6 +80,7 @@
             <td>Seller</td>
             <td>Price</td>
             <td>Quantity</td>
+            <td>Total</td>
             <td>Delete</td>
         </tr>
         <% for(var i = 0;i < result.rows.length; i++){ %>
@@ -106,6 +107,9 @@
                     <%= result.rows[i]["quantity"] %>
                 </td>
                 <td>
+                    <%= result.rows[i]["total"] %>
+                </td>
+                <td>
                     <form class="deletefromcart" action="deletefromcart" method="post">
                     <button type="submit" class="push_button red" name="clothing_id" value="<%= result.rows[i]['clothing_id'] %>" >Delete from Cart</button>
                     </form>
@@ -114,10 +118,13 @@
         <% } %>
     </table>
     <div style="display: flex; justify-content: center; align-items: center;">
+        <h3>Total <%= total %></h3>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center;">
         <a href="collection" style="text-decoration: none;"><button class="push_button blue">Continue Shopping</button></a>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
-    <a href="checkout" style="text-decoration: none;"><button class="push_button red">Checkout</button></a>
+    <a href="checkout" style="text-decoration: none;"><button class="push_button red">Confirm Order</button></a>
 </div>
 </div>
     <script>

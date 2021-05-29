@@ -169,12 +169,13 @@ app.post('/viewreceipt', (req, res) =>{
     cartid = req.body.cart_id; 
     res.redirect('/receipt');    
 })
+
 //user cart
 app.get('/usercart', (req, res) => { 
     if(req.session.loggedin !== true)
         res.redirect('/logintocontinue');
     else  {  
-        var qry =   "SELECT cart_item.clothing_id, clothing_name, category, description, seller, price, quantity \
+        var qry =   "SELECT cart_item.clothing_id, clothing_name, category, description, seller, price, quantity, price*quantity AS total \
         FROM Clothing, Cart_item \
         WHERE Clothing.clothing_id = Cart_item.clothing_id \
         AND Cart_item.cart_id = (SELECT cart_id FROM Cart \
@@ -191,12 +192,24 @@ app.get('/usercart', (req, res) => {
                 if(result.rows.length === 0)
                     res.render('emptycart.ejs', {res: req.session.username});
                 else {
-                    res.render('usercart.ejs', {result: result, res: req.session.username}) 
-                }
-                
+                    let qry1 = "SELECT SUM(price*quantity) AS sum FROM Clothing, Cart_item WHERE Clothing.clothing_id = Cart_item.clothing_id " +
+                                "AND Cart_item.cart_id = (SELECT cart_id FROM Cart WHERE if_bought = FALSE AND username = $1)"
+                    client
+                        .query(qry1,
+                        [req.session.username],
+                        (err, total) => {
+                            if(err) {
+                                console.log(err);
+                                res.sendStatus(500);
+                                return;
+                            } 
+                            res.render('usercart.ejs', {result: result, res: req.session.username, total: total.rows[0]['sum']}); 
+                        })                    
+                }                
             })
     }
 })
+
 //Welcome page
 app.get('/welcome', (req, res) => {
     if(req.session.loggedin === true) 

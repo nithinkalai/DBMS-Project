@@ -238,7 +238,7 @@ app.get('/checkout', (req, res) => {
                                     return;
                                 } 
                                 client
-                                    .query('CALL update_qty($1)', 
+                                    .query('CALL qtyupdate($1)', 
                                     [cartid],
                                     (err, result) => {
                                         if(err) {
@@ -394,19 +394,23 @@ app.post('/login', (req, res) => {
                     console.log(err);
                     res.sendStatus(500);
                     return;
-                }         bcrypt.compare(password, result.rows[0]['pass'], (error, result1) => { 
-                            if(result1 === true)
-                            {   req.session.loggedin = true;
-                                req.session.username = username;
-                                res.redirect('/welcome');
-                            }
-                                
-                            else    
-                                res.redirect('/loginerror');
-                });
+                }       
+                if(result.rows.length !== 0) {
+                    bcrypt.compare(password, result.rows[0]['pass'], (error, result1) => { 
+                        if(result1 === true)
+                        {   req.session.loggedin = true;
+                            req.session.username = username;
+                            res.redirect('/welcome');
+                        }
+                            
+                        else    
+                            res.redirect('/loginerror');
+                    });
+                }  else res.sendFile(path.join(__dirname, 'public', 'invaliduser.html'));
+                        
             });
     } else {
-        res.send('Invalid');
+        res.send('<script>alert("INVALID")</script>');
     }
 });
 

@@ -30,36 +30,36 @@
 
     <nav class="sidebar">
         <div class="navbar-collapse" id="navbar-collapse">
-        <div class="site-header hidden-xs">
-            <a class="site-brand" href="./index.html" title="">
-                <img class="img-responsive site-logo" alt="" src="./assets/images/mashup-logo.svg">
-                Spring Fashion
-            </a>
-            <p>Your one stop shop for all your fashion needs</p>
-        </div>
-        <ul class="nav">
-            <li><a href="./index.html" title="">Home</a></li>
-            <li><a href="./about.html" title="">About</a></li>
-            <li><a href="collection" title="">Our Collection</a></li>
-            <li><a href="logout" title="">Logout</a></li>
-            <li><a href="usercart" title="">Your Cart</a></li>
-            <li><a href="pastorders" title="">Past Orders</a></li>
-        </ul>
+            <div class="site-header hidden-xs">
+                <a class="site-brand" href="./index.html" title="">
+                    <img class="img-responsive site-logo" alt="" src="./assets/images/mashup-logo.svg">
+                    Spring Fashion
+                </a>
+                <p>Your one stop shop for all your fashion needs</p>
+            </div>
+            <ul class="nav">
+                <li><a href="./index.html" title="">Home</a></li>
+                <li><a href="./about.html" title="">About</a></li>
+                <li><a href="collection" title="">Our Collection</a></li>
+                <li><a href="logout" title="">Logout</a></li>
+                <li><a href="usercart" title="">Your Cart</a></li>
+                <li><a href="pastorders" title="">Past Orders</a></li>
+            </ul>
 
-        <nav class="nav-footer">
-            <p class="nav-footer-social-buttons">
-            <a class="fa-icon" href="https://www.instagram.com/" title="">
-                <i class="fa fa-instagram"></i>
-            </a>
-            <a class="fa-icon" href="https://dribbble.com/" title="">
-                <i class="fa fa-dribbble"></i>
-            </a>
-            <a class="fa-icon" href="https://twitter.com/" title="">
-                <i class="fa fa-twitter"></i>
-            </a>
-            </p>
-            <p><a href="https://github.com/sxfiy-a/DBMS-Project">© Spring Fashion</a></p>
-        </nav>  
+            <nav class="nav-footer">
+                <p class="nav-footer-social-buttons">
+                <a class="fa-icon" href="https://www.instagram.com/" title="">
+                    <i class="fa fa-instagram"></i>
+                </a>
+                <a class="fa-icon" href="https://dribbble.com/" title="">
+                    <i class="fa fa-dribbble"></i>
+                </a>
+                <a class="fa-icon" href="https://twitter.com/" title="">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                </p>
+                <p><a href="https://github.com/sxfiy-a/DBMS-Project">© Spring Fashion</a></p>
+            </nav>  
         </div> 
     </nav>
 </header>
@@ -73,19 +73,19 @@
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
         <h3>WOMEN'S CLOTHING</h3>
-      </div>
+    </div>
       
-      <section class="container">
+    <section class="container">
         <div class="dropdown">
             <select name="one" class="dropdown-select" onchange="location=this.value;">
-            <option value="">Filter By</option>
-            <option value="men">MEN</option>
-            <option value="women">WOMEN</option>
-            <option value="kids">KIDS</option>
-            <option value="collection">ALL</option>
+                <option value="">Filter By</option>
+                <option value="men">MEN</option>
+                <option value="women">WOMEN</option>
+                <option value="kids">KIDS</option>
+                <option value="collection">ALL</option>
             </select>
-      </div>
-      </section>
+        </div>
+    </section>
     <table style="width: 100%; height: 100%; text-align:center; font-size: large;">
         <tr>
             <td>SL NO</td>
@@ -98,56 +98,55 @@
             <td>Buy Now</td>
         </tr>
         <% for(var i = 0;i < result.rows.length; i++){ %>
-            <tr>
-                <td>
-                    <%= i+1 %>
-                </td>
-                <td>
-                    <%= result.rows[i]["clothing_name"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["category"] %> 
-                </td>
-                <td>
-                    <%= result.rows[i]["description"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["seller"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["price"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["available_quantity"] %>
-                </td>
-                <td>
-                    <form class="addtocart" action="addtocart" method="post">
+        <tr>
+            <td>
+                <%= i+1 %>
+            </td>
+            <td>
+                <%= result.rows[i]["clothing_name"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["category"] %> 
+            </td>
+            <td>
+                <%= result.rows[i]["description"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["seller"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["price"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["available_quantity"] %>
+            </td>
+            <td>
+                <form class="addtocart" action="addtocart" method="post">
                     <button type="submit" class="push_button red" name="clothing_id" value="<%= result.rows[i]['clothing_id'] %>" >Add to Cart</button>
-                    </form>
-                </td>
-            </tr>
+                </form>
+            </td>
+        </tr>
         <% } %>
     </table>
 
 
     <script>
-    document.addEventListener("DOMContentLoaded", function (event) {
-        masonryBuild();
-    });
+        document.addEventListener("DOMContentLoaded", function (event) {
+            masonryBuild();
+        });
     </script>
     <script>
-    document.addEventListener("DOMContentLoaded", function (event) {
-    navbarToggleSidebar();
-    navActivePage();
-    });
+        document.addEventListener("DOMContentLoaded", function (event) {
+            navbarToggleSidebar();
+            navActivePage();
+        });
     </script>
     <script type="text/javascript">
-    function select(x){
-        document.getElementById("selection").value = x ;
-    }
+        function select(x){
+            document.getElementById("selection").value = x ;
+        }
     </script>
     <script type="text/javascript" src="./main.85741bff.js"></script>
 </main>
 </body>
-
 </html>

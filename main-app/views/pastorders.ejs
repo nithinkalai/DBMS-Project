@@ -15,7 +15,6 @@
     <link href="./style.css" rel="stylesheet">
 </head>
 <body>
-
 <header class="">
     <div class="navbar navbar-default visible-xs">
         <button type="button" class="navbar-toggle collapsed">
@@ -29,36 +28,36 @@
 
     <nav class="sidebar">
         <div class="navbar-collapse" id="navbar-collapse">
-        <div class="site-header hidden-xs">
-            <a class="site-brand" href="./index.html" title="">
-                <img class="img-responsive site-logo" alt="" src="./assets/images/mashup-logo.svg">
-                Spring Fashion
-            </a>
-            <p>Your one stop shop for all your fashion needs</p>
-        </div>
-        <ul class="nav">
-            <li><a href="./index.html" title="">Home</a></li>
-            <li><a href="./about.html" title="">About</a></li>
-            <li><a href="collection" title="">Our Collection</a></li>
-            <li><a href="logout" title="">Logout</a></li>
-            <li><a href="usercart" title="">Your Cart</a></li>
-            <li><a href="pastorders" title="">Past Orders</a></li>
-        </ul>
+            <div class="site-header hidden-xs">
+                <a class="site-brand" href="./index.html" title="">
+                    <img class="img-responsive site-logo" alt="" src="./assets/images/mashup-logo.svg">
+                    Spring Fashion
+                </a>
+                <p>Your one stop shop for all your fashion needs</p>
+            </div>
+            <ul class="nav">
+                <li><a href="./index.html" title="">Home</a></li>
+                <li><a href="./about.html" title="">About</a></li>
+                <li><a href="collection" title="">Our Collection</a></li>
+                <li><a href="logout" title="">Logout</a></li>
+                <li><a href="usercart" title="">Your Cart</a></li>
+                <li><a href="pastorders" title="">Past Orders</a></li>
+            </ul>
 
-        <nav class="nav-footer">
-            <p class="nav-footer-social-buttons">
-            <a class="fa-icon" href="https://www.instagram.com/" title="">
-                <i class="fa fa-instagram"></i>
-            </a>
-            <a class="fa-icon" href="https://dribbble.com/" title="">
-                <i class="fa fa-dribbble"></i>
-            </a>
-            <a class="fa-icon" href="https://twitter.com/" title="">
-                <i class="fa fa-twitter"></i>
-            </a>
-            </p>
-            <p><a href="https://github.com/sxfiy-a/DBMS-Project">© Spring Fashion</a></p>
-        </nav>  
+            <nav class="nav-footer">
+                <p class="nav-footer-social-buttons">
+                    <a class="fa-icon" href="https://www.instagram.com/" title="">
+                        <i class="fa fa-instagram"></i>
+                    </a>
+                    <a class="fa-icon" href="https://dribbble.com/" title="">
+                        <i class="fa fa-dribbble"></i>
+                    </a>
+                    <a class="fa-icon" href="https://twitter.com/" title="">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                </p>
+                <p><a href="https://github.com/sxfiy-a/DBMS-Project">© Spring Fashion</a></p>
+            </nav>  
         </div> 
     </nav>
 </header>
@@ -81,50 +80,47 @@
             <td></td>
         </tr>
         <% for(var i = 0;i < result.rows.length; i++){ %>
-            <tr>
-                <td>
-                    <%= i+1 %>
-                </td>
-                <td>
-                    <%= result.rows[i]["bill_id"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["order_date"] %> 
-                </td>
-                <td>
-                    <%= result.rows[i]["delivery_date"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["total_cost"] %>
-                </td>
-                <td>
-                    <form class="viewreceipt" action="viewreceipt" method="post">
-                        <button type="submit" class="push_button red" name="cart_id" value="<%= result.rows[i]['cart_id'] %>">View Receipt</button>
-                    </form>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                <%= i+1 %>
+            </td>
+            <td>
+                <%= result.rows[i]["bill_id"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["order_date"] %> 
+            </td>
+            <td>
+                <%= result.rows[i]["delivery_date"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["total_cost"] %>
+            </td>
+            <td>
+                <form class="viewreceipt" action="viewreceipt" method="post">
+                    <button type="submit" class="push_button red" name="cart_id" value="<%= result.rows[i]['cart_id'] %>">View Receipt</button>
+                </form>
+            </td>
+        </tr>
         <% } %>
     </table>
-
-</div>
     <script>
-    document.addEventListener("DOMContentLoaded", function (event) {
-        masonryBuild();
-    });
+        document.addEventListener("DOMContentLoaded", function (event) {
+            masonryBuild();
+        });
     </script>
     <script>
-    document.addEventListener("DOMContentLoaded", function (event) {
-    navbarToggleSidebar();
-    navActivePage();
-    });
+        document.addEventListener("DOMContentLoaded", function (event) {
+            navbarToggleSidebar();
+            navActivePage();
+        });
     </script>
     <script type="text/javascript">
-    function select(x){
-        document.getElementById("selection").value = x ;
-    }
+        function select(x){
+            document.getElementById("selection").value = x ;
+        }
     </script>
     <script type="text/javascript" src="./main.85741bff.js"></script>
 </main>
 </body>
-
 </html>

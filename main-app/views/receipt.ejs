@@ -29,36 +29,36 @@
 
     <nav class="sidebar">
         <div class="navbar-collapse" id="navbar-collapse">
-        <div class="site-header hidden-xs">
-            <a class="site-brand" href="./index.html" title="">
-                <img class="img-responsive site-logo" alt="" src="./assets/images/mashup-logo.svg">
-                Spring Fashion
-            </a>
-            <p>Your one stop shop for all your fashion needs</p>
-        </div>
-        <ul class="nav">
-            <li><a href="./index.html" title="">Home</a></li>
-            <li><a href="./about.html" title="">About</a></li>
-            <li><a href="collection" title="">Our Collection</a></li>
-            <li><a href="logout" title="">Logout</a></li>
-            <li><a href="usercart" title="">Your Cart</a></li>
-            <li><a href="pastorders" title="">Past Orders</a></li>
-        </ul>
+            <div class="site-header hidden-xs">
+                <a class="site-brand" href="./index.html" title="">
+                    <img class="img-responsive site-logo" alt="" src="./assets/images/mashup-logo.svg">
+                    Spring Fashion
+                </a>
+                <p>Your one stop shop for all your fashion needs</p>
+            </div>
+            <ul class="nav">
+                <li><a href="./index.html" title="">Home</a></li>
+                <li><a href="./about.html" title="">About</a></li>
+                <li><a href="collection" title="">Our Collection</a></li>
+                <li><a href="logout" title="">Logout</a></li>
+                <li><a href="usercart" title="">Your Cart</a></li>
+                <li><a href="pastorders" title="">Past Orders</a></li>
+            </ul>
 
-        <nav class="nav-footer">
-            <p class="nav-footer-social-buttons">
-            <a class="fa-icon" href="https://www.instagram.com/" title="">
-                <i class="fa fa-instagram"></i>
-            </a>
-            <a class="fa-icon" href="https://dribbble.com/" title="">
-                <i class="fa fa-dribbble"></i>
-            </a>
-            <a class="fa-icon" href="https://twitter.com/" title="">
-                <i class="fa fa-twitter"></i>
-            </a>
-            </p>
-            <p><a href="https://github.com/sxfiy-a/DBMS-Project">© Spring Fashion</a></p>
-        </nav>  
+            <nav class="nav-footer">
+                <p class="nav-footer-social-buttons">
+                <a class="fa-icon" href="https://www.instagram.com/" title="">
+                    <i class="fa fa-instagram"></i>
+                </a>
+                <a class="fa-icon" href="https://dribbble.com/" title="">
+                    <i class="fa fa-dribbble"></i>
+                </a>
+                <a class="fa-icon" href="https://twitter.com/" title="">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                </p>
+                <p><a href="https://github.com/sxfiy-a/DBMS-Project">© Spring Fashion</a></p>
+            </nav>  
         </div> 
     </nav>
 </header>
@@ -84,64 +84,61 @@
             <td>Total Price</td>
         </tr>
         <% for(var i = 0;i < result.rows.length; i++){ %>
-            <tr>
-                <td>
-                    <%= i+1 %>
-                </td>
-                <td>
-                    <%= result.rows[i]["clothing_name"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["category"] %> 
-                </td>
-                <td>
-                    <%= result.rows[i]["description"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["seller"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["price"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["quantity"] %>
-                </td>
-                <td>
-                    <%= result.rows[i]["total"] %>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                <%= i+1 %>
+            </td>
+            <td>
+                <%= result.rows[i]["clothing_name"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["category"] %> 
+            </td>
+            <td>
+                <%= result.rows[i]["description"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["seller"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["price"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["quantity"] %>
+            </td>
+            <td>
+                <%= result.rows[i]["total"] %>
+            </td>
+        </tr>
         <% } %>
     </table>
-<h4 style="display: flex; justify-content: center; align-items: center;">TOTAL = <%= result.rows[0]['total_cost'] %></h4>
-<h4>Order Date: <%= result.rows[0]['order_date'] %></h4>
-<h4>Delivery Date: <%= result.rows[0]['delivery_date'] %>*</h4>
-<h5>*Delivery dates might vary due to the ongoing pandemic situation</h5>
-<div style="display: flex; justify-content: center; align-items: center;">
-    <a href="collection" style="text-decoration: none;"><button class="push_button blue">Shop More</button></a>
-</div>
-<div style="display: flex; justify-content: center; align-items: center;">
-    <a href="pastorders" style="text-decoration: none;"><button class="push_button blue">Back</button></a>
-</div>
-
-</div>
+    <h4 style="display: flex; justify-content: center; align-items: center;">TOTAL = <%= result.rows[0]['total_cost'] %></h4>
+    <h4>Order Date: <%= result.rows[0]['order_date'] %></h4>
+    <h4>Delivery Date: <%= result.rows[0]['delivery_date'] %>*</h4>
+    <h5>*Delivery dates might vary due to the ongoing pandemic situation</h5>
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <a href="collection" style="text-decoration: none;"><button class="push_button blue">Shop More</button></a>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <a href="pastorders" style="text-decoration: none;"><button class="push_button blue">Back</button></a>
+    </div>
     <script>
-    document.addEventListener("DOMContentLoaded", function (event) {
-        masonryBuild();
-    });
+        document.addEventListener("DOMContentLoaded", function (event) {
+            masonryBuild();
+        });
     </script>
     <script>
-    document.addEventListener("DOMContentLoaded", function (event) {
-    navbarToggleSidebar();
-    navActivePage();
-    });
+        document.addEventListener("DOMContentLoaded", function (event) {
+            navbarToggleSidebar();
+            navActivePage();
+        });
     </script>
     <script type="text/javascript">
-    function select(x){
-        document.getElementById("selection").value = x ;
-    }
+        function select(x){
+            document.getElementById("selection").value = x ;
+        }
     </script>
     <script type="text/javascript" src="./main.85741bff.js"></script>
 </main>
 </body>
-
 </html>

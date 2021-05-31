@@ -441,17 +441,6 @@ app.post('/signup', (req, res) => {
     } = req.body;
   
     client
-        .query('SELECT * FROM Customer WHERE email = $1', [email],
-        (err, result) => {
-            if(result.rows.length !== 0)
-            {
-                res.status(400).sendFile(path.join(__dirname, 'public', 'emailexists.html'));
-                return;
-            } 
-           //  res.end();   
-        });
-
-    client
         .query('SELECT * FROM Customer WHERE username = $1', [username],
         (err, result) => {
             if(result.rows.length !== 0)
@@ -459,23 +448,36 @@ app.post('/signup', (req, res) => {
                 res.status(400).sendFile(path.join(__dirname, 'public', 'usernameexists.html'));
                 return;
             }  
-         //   res.end();
+            //res.end();
+            else {
+                client
+                .query('SELECT * FROM Customer WHERE email = $1', [email],
+                (err, result) => {
+                    if(result.rows.length !== 0)
+                    {
+                        res.status(400).sendFile(path.join(__dirname, 'public', 'emailexists.html'));
+                        return;
+                    } 
+                    // res.end();   
+                    else {
+                        bcrypt.hash(password, saltRounds, (err, hash) => {
+                            client
+                            .query('INSERT INTO Customer VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+                            [username, hash, firstname, lastname, dob, gender, phno, email, address],
+                            (err, result) => {
+                                if(err) {
+                                    console.log(err);
+                                    res.sendStatus(500);
+                                    return;
+                                } 
+                                res.status(201).sendFile(path.join(__dirname, 'public', 'created.html'));
+                    
+                            });
+                        });
+                    }
+                });
+            }
         });
-        bcrypt.hash(password, saltRounds, (err, hash) => {
-            client
-            .query('INSERT INTO Customer VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-            [username, hash, firstname, lastname, dob, gender, phno, email, address],
-            (err, result) => {
-                if(err) {
-                    console.log(err);
-                    res.sendStatus(500);
-                    return;
-                } 
-                res.status(201).sendFile(path.join(__dirname, 'public', 'created.html'));
-    
-            });
-        });
-  
 })
 
 const PORT = process.env.PORT || 3000;

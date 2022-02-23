@@ -1,6 +1,6 @@
 # Online-Clothing-Store
 
-Developed as Final Project for Database Management Systems Course in University  
+Developed as Final Project for Database Management Systems Course in University - CS6106  
 
 For details on how to use the application - `DOCUMENTATION.pdf`  
 
